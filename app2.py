@@ -26,7 +26,7 @@ def agregar_valores():
         cord_serie = {"row": 0, "column": 31}
         columnas = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
 
-        print(df.iat[0, 31])
+        print(df.iat[0, 29])
         # df.iat[0, 31] = 301
         for i, value in enumerate(columnas, start=0):
             df.iat[2, value] = un_carton[i]
