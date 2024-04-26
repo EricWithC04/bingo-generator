@@ -16,36 +16,48 @@ def generar_cartones(num_cartones):
     return cartones
 
 # Generar los 500 cartones de bingo
-cartones = generar_cartones(10)
+cartones = generar_cartones(600)
 
-def agregar_valores():
+def agregar_valores(un_carton, index):
     try:
         df = pd.DataFrame(bingo_model)
-        un_carton = generar_carton()
+        # un_carton = generar_carton()
 
-        cord_serie = {"row": 0, "column": 31}
         columnas = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29]
-
-        print(df.iat[0, 29])
-        # df.iat[0, 31] = 301
+        
         for i, value in enumerate(columnas, start=0):
             df.iat[2, value] = un_carton[i]
-        # print(df.iat[0, 31])
-        df.columns.values[-1] = 301
+        
+        df.columns.values[-1] = 300 + index
 
-        with pd.ExcelWriter("./bingos/new_bingo_model.xlsx") as writer:
+        with pd.ExcelWriter(f"./bingos/Bingo{index}.xlsx") as writer:
             df.to_excel(writer, sheet_name="Bingo", index=False)
     except Exception as e:
         print(e)
 
-agregar_valores()
-
 wb_original = xw.Book('bingo_model.xlsx')
-wb_nuevo = xw.Book('./bingos/new_bingo_model.xlsx')
 
-wb_original.sheets[0].api.Cells.Copy()
-wb_nuevo.sheets[0].api.Cells.PasteSpecial(Paste=-4122)
+for i in range(1, 601):
+    agregar_valores(cartones[i - 1], i)
+    wb_nuevo = xw.Book(f'./bingos/Bingo{i}.xlsx')
 
-wb_nuevo.save()
-wb_nuevo.close()
+    wb_original.sheets[0].api.Cells.Copy()
+    wb_nuevo.sheets[0].api.Cells.PasteSpecial(Paste=-4122)
+
+    wb_nuevo.save()
+    wb_nuevo.close()
 wb_original.close()
+
+def hay_repetidos(cs):
+    for i in range(len(cs)):
+        for j in range(i + 1, len(cs)):
+            if cs[i] == cs[j]:
+                return True  # Se encontró un cartón repetido
+    return False  # No se encontraron cartones repetidos
+
+# Utiliza la función para verificar si hay cartones repetidos
+if hay_repetidos(cartones):
+    print("Se encontraron cartones repetidos.")
+else:
+    print("No hay cartones repetidos.")
+
